@@ -183,12 +183,6 @@
             position: relative;
         }
 
-        .post img {
-            max-width: 100%;
-            border-radius: 10px;
-            margin-top: 10px;
-        }
-
         .post .delete-button {
             position: absolute;
             top: 10px;
@@ -243,6 +237,46 @@
         .post-actions button:hover {
             background-color: #660066;
         }
+
+        .reply {
+            background-color: #000;
+            border: 2px solid #cc00cc;
+            border-radius: 20px;
+            padding: 20px;
+            width: 100%;
+            max-width: 800px;
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .reply textarea {
+            background-color: #000;
+            color: #fff;
+            border: 2px solid #cc00cc;
+            border-radius: 20px;
+            width: 90%;
+            padding: 10px;
+            font-family: Arial, sans-serif;
+            resize: none;
+        }
+
+        .reply button {
+            background-color: #cc00cc;
+            border: none;
+            color: #fff;
+            padding: 10px 20px;
+            margin-top: 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .reply button:hover {
+            background-color: #660066;
+        }
+
     </style>
 </head>
 <body>
@@ -280,9 +314,9 @@
 
         <form id="post-form">
             <textarea id="post-text" rows="4" placeholder="Write your post here..." required></textarea><br>
-            <input type="file" id="upload-input" accept="image/*" hidden>
             <div class="button-row">
                 <button type="button" id="upload-pic">📷 Upload Picture</button>
+                <button type="button" id="upload-file">📄 Upload File</button>
                 <button type="submit">Post</button>
             </div>
         </form>
@@ -296,26 +330,62 @@
         const postForm = document.getElementById('post-form');
         const postsSection = document.getElementById('posts-section');
         const uploadPicButton = document.getElementById('upload-pic');
-        const uploadInput = document.getElementById('upload-input');
-        let uploadedImage = null;
+        const uploadFileButton = document.getElementById('upload-file');
+        const topicHeader = document.getElementById('topic-header');
 
-        // Handle picture upload
-        uploadPicButton.addEventListener('click', () => {
-            uploadInput.click();
-        });
+        // Get topic from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const topic = urlParams.get('topic');
 
-        uploadInput.addEventListener('change', () => {
-            const file = uploadInput.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    uploadedImage = e.target.result; // Store the uploaded image data
-                };
-                reader.readAsDataURL(file);
-            }
-        });
+        // Valid topics
+        const validTopics = {
+            "einfuehrung-in-die-informatik": "Einführung in die Informatik",
+            "business-mathematik": "Business Mathematik",
+            "projektmanagement": "Projektmanagement",
+            "requirements-engineering": "Requirements Engineering",
+            "wissenschaftliches-arbeiten-1": "Wissenschaftliches Arbeiten 1",
+            "grundlagen-der-programmierung": "Grundlagen der Programmierung",
+            "allgemeine-bwl": "Allgemeine BWL",
+            "datenschutz": "Datenschutz",
+            "software-engineering": "Software Engineering",
+            "wissenschaftliches-arbeiten-2": "Wissenschaftliches Arbeiten 2",
+            "englisch": "Englisch",
+            "software-ergonomie": "Software-Ergonomie",
+            "empirische-methoden": "Empirische Methoden",
+            "product-lifecycle-management": "Produktlebenszyklus-Management",
+            "softwareproduktentwicklung": "Software-Produktentwicklung",
+            "moderation-und-fuehrung": "Moderation und Führung"
+        };
 
-        const createPostElement = (postText, postDate = new Date().toLocaleString(), image = null) => {
+        // Set topic header based on valid topics or default to "General"
+        if (topic && validTopics[topic]) {
+            topicHeader.innerText = validTopics[topic];
+        } else {
+            topicHeader.innerText = "General";
+        }
+
+        // Load posts for the current topic from local storage
+        const loadPosts = () => {
+            const posts = JSON.parse(localStorage.getItem(topic || "general")) || [];
+            posts.forEach(post => {
+                createPostElement(post.text, post.date, post.replies);
+            });
+        };
+
+        // Save posts for the current topic to local storage
+        const savePosts = () => {
+            const posts = [];
+            document.querySelectorAll('.post').forEach(post => {
+                const text = post.querySelector('.post-body').textContent;
+                const date = post.querySelector('.post-date').textContent;
+                const replies = Array.from(post.querySelectorAll('.reply div')).map(reply => reply.textContent);
+                posts.push({ text, date, replies });
+            });
+            localStorage.setItem(topic || "general", JSON.stringify(posts));
+        };
+
+        // Create a post element
+        const createPostElement = (postText, postDate = new Date().toLocaleString(), replies = []) => {
             const postDiv = document.createElement('div');
             postDiv.className = 'post';
 
@@ -324,6 +394,7 @@
             deleteButton.textContent = '×';
             deleteButton.onclick = () => {
                 postDiv.remove();
+                savePosts();
             };
             postDiv.appendChild(deleteButton);
 
@@ -332,27 +403,78 @@
             postBody.textContent = postText;
             postDiv.appendChild(postBody);
 
-            if (image) {
-                const img = document.createElement('img');
-                img.src = image;
-                postDiv.appendChild(img);
-            }
-
             const postDateDiv = document.createElement('div');
             postDateDiv.className = 'post-date';
             postDateDiv.textContent = postDate;
             postDiv.appendChild(postDateDiv);
+
+            const actionsDiv = document.createElement('div');
+            actionsDiv.className = 'post-actions';
+
+            const replyButton = document.createElement('button');
+            replyButton.textContent = 'Reply';
+            replyButton.onclick = () => {
+                const replyDiv = document.createElement('div');
+                replyDiv.className = 'reply';
+
+                const replyTextarea = document.createElement('textarea');
+                replyTextarea.rows = 2;
+                replyTextarea.placeholder = 'Write your reply here...';
+
+                const replySubmit = document.createElement('button');
+                replySubmit.textContent = 'Submit';
+                replySubmit.onclick = () => {
+                    const replyText = replyTextarea.value;
+                    const replyContent = document.createElement('div');
+                    replyContent.textContent = replyText;
+                    replyDiv.appendChild(replyContent);
+                    replyDiv.removeChild(replyTextarea);
+                    replyDiv.removeChild(replySubmit);
+                    savePosts();
+                };
+
+                replyDiv.appendChild(replyTextarea);
+                replyDiv.appendChild(replySubmit);
+                postDiv.appendChild(replyDiv);
+            };
+
+            actionsDiv.appendChild(replyButton);
+            postDiv.appendChild(actionsDiv);
+
+            replies.forEach(replyText => {
+                const replyDiv = document.createElement('div');
+                replyDiv.className = 'reply';
+                const replyContent = document.createElement('div');
+                replyContent.textContent = replyText;
+                replyDiv.appendChild(replyContent);
+                postDiv.appendChild(replyDiv);
+            });
 
             postsSection.appendChild(postDiv);
         };
 
         postForm.addEventListener('submit', (e) => {
             e.preventDefault();
+
             const postText = document.getElementById('post-text').value;
-            createPostElement(postText, new Date().toLocaleString(), uploadedImage);
-            uploadedImage = null; // Reset the uploaded image
+            createPostElement(postText);
+            savePosts();
+
+            // Reset form
             postForm.reset();
         });
+
+        // Handle picture and file uploads
+        uploadPicButton.addEventListener('click', () => {
+            alert('Picture upload functionality coming soon!');
+        });
+
+        uploadFileButton.addEventListener('click', () => {
+            alert('File upload functionality coming soon!');
+        });
+
+        // Load saved posts on page load
+        loadPosts();
     </script>
 </body>
 </html>
