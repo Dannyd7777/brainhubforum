@@ -327,154 +327,153 @@
     </div>
 
     <script>
-        const postForm = document.getElementById('post-form');
-        const postsSection = document.getElementById('posts-section');
-        const uploadPicButton = document.getElementById('upload-pic');
-        const uploadFileButton = document.getElementById('upload-file');
-        const topicHeader = document.getElementById('topic-header');
+        document.addEventListener("DOMContentLoaded", () => {
+            const postForm = document.getElementById("post-form");
+            const postsSection = document.getElementById("posts-section");
+            const uploadPicButton = document.getElementById("upload-pic");
+            const uploadFileButton = document.getElementById("upload-file");
+            const topicHeader = document.getElementById("topic-header");
 
-        // Get topic from URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const topic = urlParams.get('topic');
+            // Get topic from URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const topic = urlParams.get("topic");
 
-        // Valid topics
-        const validTopics = {
-            "einfuehrung-in-die-informatik": "Einführung in die Informatik",
-            "business-mathematik": "Business Mathematik",
-            "projektmanagement": "Projektmanagement",
-            "requirements-engineering": "Requirements Engineering",
-            "wissenschaftliches-arbeiten-1": "Wissenschaftliches Arbeiten 1",
-            "grundlagen-der-programmierung": "Grundlagen der Programmierung",
-            "allgemeine-bwl": "Allgemeine BWL",
-            "datenschutz": "Datenschutz",
-            "software-engineering": "Software Engineering",
-            "wissenschaftliches-arbeiten-2": "Wissenschaftliches Arbeiten 2",
-            "englisch": "Englisch",
-            "software-ergonomie": "Software-Ergonomie",
-            "empirische-methoden": "Empirische Methoden",
-            "product-lifecycle-management": "Produktlebenszyklus-Management",
-            "softwareproduktentwicklung": "Software-Produktentwicklung",
-            "moderation-und-fuehrung": "Moderation und Führung"
-        };
-
-        // Set topic header based on valid topics or default to "General"
-        if (topic && validTopics[topic]) {
-            topicHeader.innerText = validTopics[topic];
-        } else {
-            topicHeader.innerText = "General";
-        }
-
-        // Load posts for the current topic from local storage
-        const loadPosts = () => {
-            const posts = JSON.parse(localStorage.getItem(topic || "general")) || [];
-            posts.forEach(post => {
-                createPostElement(post.text, post.date, post.replies);
-            });
-        };
-
-        // Save posts for the current topic to local storage
-        const savePosts = () => {
-            const posts = [];
-            document.querySelectorAll('.post').forEach(post => {
-                const text = post.querySelector('.post-body').textContent;
-                const date = post.querySelector('.post-date').textContent;
-                const replies = Array.from(post.querySelectorAll('.reply div')).map(reply => reply.textContent);
-                posts.push({ text, date, replies });
-            });
-            localStorage.setItem(topic || "general", JSON.stringify(posts));
-        };
-
-        // Create a post element
-        const createPostElement = (postText, postDate = new Date().toLocaleString(), replies = []) => {
-            const postDiv = document.createElement('div');
-            postDiv.className = 'post';
-
-            const deleteButton = document.createElement('button');
-            deleteButton.className = 'delete-button';
-            deleteButton.textContent = '×';
-            deleteButton.onclick = () => {
-                postDiv.remove();
-                savePosts();
+            // Valid topics
+            const validTopics = {
+                "einfuehrung-in-die-informatik": "Einführung in die Informatik",
+                "business-mathematik": "Business Mathematik",
+                "projektmanagement": "Projektmanagement",
+                "requirements-engineering": "Requirements Engineering",
+                "wissenschaftliches-arbeiten-1": "Wissenschaftliches Arbeiten 1",
+                "grundlagen-der-programmierung": "Grundlagen der Programmierung",
+                "allgemeine-bwl": "Allgemeine BWL",
+                "datenschutz": "Datenschutz",
+                "software-engineering": "Software Engineering",
+                "wissenschaftliches-arbeiten-2": "Wissenschaftliches Arbeiten 2",
+                "englisch": "Englisch",
+                "software-ergonomie": "Software-Ergonomie",
+                "empirische-methoden": "Empirische Methoden",
+                "product-lifecycle-management": "Produktlebenszyklus-Management",
+                "softwareproduktentwicklung": "Software-Produktentwicklung",
+                "moderation-und-fuehrung": "Moderation und Führung",
             };
-            postDiv.appendChild(deleteButton);
 
-            const postBody = document.createElement('div');
-            postBody.className = 'post-body';
-            postBody.textContent = postText;
-            postDiv.appendChild(postBody);
+            // Set topic header based on valid topics or default to "General"
+            if (topic && validTopics[topic]) {
+                topicHeader.innerText = validTopics[topic];
+            } else {
+                topicHeader.innerText = "General";
+            }
 
-            const postDateDiv = document.createElement('div');
-            postDateDiv.className = 'post-date';
-            postDateDiv.textContent = postDate;
-            postDiv.appendChild(postDateDiv);
+            // Initialize upload button functionality
+            const initializeUploadButtons = () => {
+                uploadPicButton.addEventListener("click", () => {
+                    alert(`Picture upload functionality coming soon for topic: ${topic || "general"}`);
+                });
 
-            const actionsDiv = document.createElement('div');
-            actionsDiv.className = 'post-actions';
+                uploadFileButton.addEventListener("click", () => {
+                    alert(`File upload functionality coming soon for topic: ${topic || "general"}`);
+                });
+            };
 
-            const replyButton = document.createElement('button');
-            replyButton.textContent = 'Reply';
-            replyButton.onclick = () => {
-                const replyDiv = document.createElement('div');
-                replyDiv.className = 'reply';
+            // Load posts for the current topic from local storage
+            const loadPosts = () => {
+                const posts = JSON.parse(localStorage.getItem(topic || "general")) || [];
+                posts.forEach((post) => {
+                    createPostElement(post.text, post.date, post.replies);
+                });
+            };
 
-                const replyTextarea = document.createElement('textarea');
-                replyTextarea.rows = 2;
-                replyTextarea.placeholder = 'Write your reply here...';
+            // Save posts for the current topic to local storage
+            const savePosts = () => {
+                const posts = [];
+                document.querySelectorAll(".post").forEach((post) => {
+                    const text = post.querySelector(".post-body").textContent;
+                    const date = post.querySelector(".post-date").textContent;
+                    const replies = Array.from(post.querySelectorAll(".reply div")).map(
+                        (reply) => reply.textContent
+                    );
+                    posts.push({ text, date, replies });
+                });
+                localStorage.setItem(topic || "general", JSON.stringify(posts));
+            };
 
-                const replySubmit = document.createElement('button');
-                replySubmit.textContent = 'Submit';
-                replySubmit.onclick = () => {
-                    const replyText = replyTextarea.value;
-                    const replyContent = document.createElement('div');
-                    replyContent.textContent = replyText;
-                    replyDiv.appendChild(replyContent);
-                    replyDiv.removeChild(replyTextarea);
-                    replyDiv.removeChild(replySubmit);
+            // Create a post element
+            const createPostElement = (postText, postDate = new Date().toLocaleString(), replies = []) => {
+                const postDiv = document.createElement("div");
+                postDiv.className = "post";
+
+                const deleteButton = document.createElement("button");
+                deleteButton.className = "delete-button";
+                deleteButton.textContent = "×";
+                deleteButton.onclick = () => {
+                    postDiv.remove();
                     savePosts();
                 };
+                postDiv.appendChild(deleteButton);
 
-                replyDiv.appendChild(replyTextarea);
-                replyDiv.appendChild(replySubmit);
-                postDiv.appendChild(replyDiv);
+                const postBody = document.createElement("div");
+                postBody.className = "post-body";
+                postBody.textContent = postText;
+                postDiv.appendChild(postBody);
+
+                const postDateDiv = document.createElement("div");
+                postDateDiv.className = "post-date";
+                postDateDiv.textContent = postDate;
+                postDiv.appendChild(postDateDiv);
+
+                const actionsDiv = document.createElement("div");
+                actionsDiv.className = "post-actions";
+
+                const replyButton = document.createElement("button");
+                replyButton.textContent = "Reply";
+                replyButton.onclick = () => {
+                    const replyDiv = document.createElement("div");
+                    replyDiv.className = "reply";
+
+                    const replyTextarea = document.createElement("textarea");
+                    replyTextarea.rows = 2;
+                    replyTextarea.placeholder = "Write your reply here...";
+
+                    const replySubmit = document.createElement("button");
+                    replySubmit.textContent = "Submit";
+                    replySubmit.onclick = () => {
+                        const replyText = replyTextarea.value;
+                        const replyContent = document.createElement("div");
+                        replyContent.textContent = replyText;
+                        replyDiv.appendChild(replyContent);
+                        replyDiv.removeChild(replyTextarea);
+                        replyDiv.removeChild(replySubmit);
+                        savePosts();
+                    };
+
+                    replyDiv.appendChild(replyTextarea);
+                    replyDiv.appendChild(replySubmit);
+                    postDiv.appendChild(replyDiv);
+                };
+
+                actionsDiv.appendChild(replyButton);
+                postDiv.appendChild(actionsDiv);
+
+                replies.forEach((replyText) => {
+                    const replyDiv = document.createElement("div");
+                    replyDiv.className = "reply";
+                    const replyContent = document.createElement("div");
+                    replyContent.textContent = replyText;
+                    replyDiv.appendChild(replyContent);
+                    postDiv.appendChild(replyDiv);
+                });
+
+                postsSection.appendChild(postDiv);
             };
 
-            actionsDiv.appendChild(replyButton);
-            postDiv.appendChild(actionsDiv);
+            postForm.addEventListener("submit", (e) => {
+                e.preventDefault();
 
-            replies.forEach(replyText => {
-                const replyDiv = document.createElement('div');
-                replyDiv.className = 'reply';
-                const replyContent = document.createElement('div');
-                replyContent.textContent = replyText;
-                replyDiv.appendChild(replyContent);
-                postDiv.appendChild(replyDiv);
+                const postText = document.getElementById("post-text").value;
+                createPostElement(postText);
+                savePosts();
+
+                // Reset form
+                postForm.reset();
             });
-
-            postsSection.appendChild(postDiv);
-        };
-
-        postForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-
-            const postText = document.getElementById('post-text').value;
-            createPostElement(postText);
-            savePosts();
-
-            // Reset form
-            postForm.reset();
-        });
-
-        // Handle picture and file uploads
-        uploadPicButton.addEventListener('click', () => {
-            alert('Picture upload functionality coming soon!');
-        });
-
-        uploadFileButton.addEventListener('click', () => {
-            alert('File upload functionality coming soon!');
-        });
-
-        // Load saved posts on page load
-        loadPosts();
-    </script>
-</body>
-</html>
