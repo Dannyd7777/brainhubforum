@@ -98,8 +98,10 @@
 
         .main-content h1 {
             font-size: 3.5rem;
-            color: transparent;
-            -webkit-text-stroke: 2px #fff;
+            color: #000;
+            background-color: #fff;
+            padding: 10px 20px;
+            border-radius: 10px;
             text-align: center;
             margin-top: 0;
             position: relative;
@@ -445,5 +447,74 @@
             postForm.reset();
         });
     </script>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toggle Button</title>
+    <style>
+        #toggle-theme {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #cc00cc;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        #toggle-theme::before {
+            content: '🌙';
+            margin-right: 8px;
+        }
+
+        .light-mode #toggle-theme {
+            background-color: #001f3f;
+            color: #fff;
+        }
+
+        .light-mode #toggle-theme::before {
+            content: '☀️';
+        }
+
+        #toggle-theme:hover {
+            background-color: #660066;
+        }
+
+        .light-mode #toggle-theme:hover {
+            background-color: #004080;
+        }
+
+        body {
+            background-color: #000;
+            color: #fff;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body.light-mode {
+            background-color: #fff;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <button id="toggle-theme">Light Mode</button>
+
+    <script>
+        const toggleButton = document.getElementById('toggle-theme');
+        const body = document.body;
+
+        toggleButton.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            toggleButton.textContent = body.classList.contains('light-mode') ? 'Dark Mode' : 'Light Mode';
+        });
+    </script>
+</body>
 </body>
 </html>
